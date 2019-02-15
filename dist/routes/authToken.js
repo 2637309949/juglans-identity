@@ -6,7 +6,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 const utils = require('../utils');
 
-module.export = function (_ref) {
+module.exports = function (_ref) {
   let {
     router,
     authToken,

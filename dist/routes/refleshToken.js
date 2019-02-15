@@ -8,7 +8,7 @@ const moment = require('moment');
 
 const utils = require('../utils');
 
-module.export = function (_ref) {
+module.exports = function (_ref) {
   let {
     router,
     route,

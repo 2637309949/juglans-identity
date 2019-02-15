@@ -12,7 +12,7 @@ const refleshTokenRoute = require('./refleshToken');
 
 const authTokenRoute = require('./authToken');
 
-module.export = function (_ref) {
+module.exports = function (_ref) {
   let {
     router,
     route,

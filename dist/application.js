@@ -19,7 +19,7 @@ const is = require('is');
 
 const utils = require('./utils');
 
-const Routes = require('./routes'); // Identity contructor
+const Routes = require('./routes/index'); // Identity contructor
 
 
 function Identity(_ref) {
