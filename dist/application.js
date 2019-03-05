@@ -19,8 +19,7 @@ const is = require('is');
 
 const utils = require('./utils');
 
-const Routes = require('./routes/index'); // Identity contructor
-
+const Routes = require('./routes/index');
 
 function Identity(_ref) {
   let {
@@ -59,10 +58,10 @@ function Identity(_ref) {
   assert.ok(is.function(revokeToken), 'revokeToken can not be empty!');
   assert.ok(is.function(findToken), 'findToken can not be empty!');
   assert.ok(is.function(saveToken), 'saveToken can not be empty!');
-  assert.ok(is.number(expiresIn), 'expiresIn can not be empty!');
   assert.ok(is.function(auth), 'auth can not be empty!');
-  assert.ok(is.array(fakeTokens), 'fakeTokens should be array!');
-  assert.ok(is.array(fakeUrls), 'fakeUrls should be array!');
+  assert.ok(is.number(expiresIn), 'expiresIn can not be empty!');
+  assert.ok(is.array(fakeTokens) || is.function(fakeTokens), 'fakeTokens should be array or function!');
+  assert.ok(is.array(fakeUrls) || is.function(fakeUrls), 'fakeUrls should be array or function!');
   this.options = {
     auth,
     expiresIn,
@@ -139,36 +138,53 @@ function () {
 }(); // Export Plugin
 
 
-proto.plugin = function (_ref4) {
-  let {
-    router
-  } = _ref4;
-  const {
-    auth,
-    expiresIn,
-    fakeUrls,
-    fakeTokens,
-    route,
-    saveToken,
-    revokeToken,
-    findToken
-  } = this.options;
-  const obtainToken = this.obtainToken.bind(this);
-  const authToken = this.authToken.bind(this);
-  Routes({
-    router,
-    route,
-    obtainToken,
-    auth,
-    findToken,
-    revokeToken,
-    saveToken,
-    expiresIn,
-    fakeUrls,
-    authToken,
-    fakeTokens
+proto.plugin =
+/*#__PURE__*/
+function () {
+  var _ref5 = _asyncToGenerator(function* (_ref4) {
+    let {
+      router
+    } = _ref4;
+    let {
+      auth,
+      expiresIn,
+      fakeUrls,
+      fakeTokens,
+      route,
+      saveToken,
+      revokeToken,
+      findToken
+    } = this.options;
+
+    if (is.function(fakeTokens)) {
+      fakeTokens = yield fakeTokens();
+    }
+
+    if (is.function(fakeUrls)) {
+      fakeUrls = yield fakeUrls();
+    }
+
+    const obtainToken = this.obtainToken.bind(this);
+    const authToken = this.authToken.bind(this);
+    Routes({
+      router,
+      route,
+      obtainToken,
+      auth,
+      findToken,
+      revokeToken,
+      saveToken,
+      expiresIn,
+      fakeUrls,
+      authToken,
+      fakeTokens
+    });
   });
-};
+
+  return function (_x3) {
+    return _ref5.apply(this, arguments);
+  };
+}();
 
 Identity.getAccessData = utils.getAccessData;
 Identity.getAccessToken = utils.getAccessToken;
