@@ -21,6 +21,10 @@ const utils = require('./utils');
 
 const Routes = require('./routes/index');
 
+const model = require('./model');
+
+const Redis = require('juglans-addition').Redis;
+
 function Identity(_ref) {
   let {
     auth,
@@ -53,11 +57,11 @@ function Identity(_ref) {
         findToken
       }
     });
-  }
+  } // assert.ok(is.function(revokeToken), 'revokeToken can not be empty!')
+  // assert.ok(is.function(findToken), 'findToken can not be empty!')
+  // assert.ok(is.function(saveToken), 'saveToken can not be empty!')
 
-  assert.ok(is.function(revokeToken), 'revokeToken can not be empty!');
-  assert.ok(is.function(findToken), 'findToken can not be empty!');
-  assert.ok(is.function(saveToken), 'saveToken can not be empty!');
+
   assert.ok(is.function(auth), 'auth can not be empty!');
   assert.ok(is.number(expiresIn), 'expiresIn can not be empty!');
   assert.ok(is.array(fakeTokens) || is.function(fakeTokens), 'fakeTokens should be array or function!');
@@ -143,7 +147,8 @@ proto.plugin =
 function () {
   var _ref5 = _asyncToGenerator(function* (_ref4) {
     let {
-      router
+      router,
+      config
     } = _ref4;
     let {
       auth,
@@ -155,6 +160,33 @@ function () {
       revokeToken,
       findToken
     } = this.options;
+
+    if ((!saveToken || !revokeToken || !findToken) && config.redis) {
+      const redis = Redis.retryConnect(config.redis.uri, config.redis.opts, function (err) {
+        if (err) {
+          console.error(err);
+        }
+      });
+
+      if (!saveToken) {
+        saveToken = model.saveToken(redis);
+        this.options.saveToken = saveToken;
+      }
+
+      if (!revokeToken) {
+        revokeToken = model.saveToken(redis);
+        this.options.revokeToken = revokeToken;
+      }
+
+      if (!findToken) {
+        findToken = model.saveToken(redis);
+        this.options.findToken = findToken;
+      }
+    }
+
+    assert.ok(is.function(revokeToken), 'revokeToken can not be empty!');
+    assert.ok(is.function(findToken), 'findToken can not be empty!');
+    assert.ok(is.function(saveToken), 'saveToken can not be empty!');
 
     if (is.function(fakeTokens)) {
       fakeTokens = yield fakeTokens();
