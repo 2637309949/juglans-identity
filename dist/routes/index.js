@@ -18,6 +18,7 @@ module.exports = function (_ref) {
     route,
     auth,
     model,
+    obtainToken,
     saveToken,
     expiresIn,
     fakeUrls,
@@ -31,7 +32,7 @@ module.exports = function (_ref) {
     router,
     route,
     auth,
-    model
+    obtainToken
   });
   identityTokenRoute({
     router,

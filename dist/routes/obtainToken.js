@@ -9,7 +9,7 @@ module.exports = function (_ref) {
     router,
     route,
     auth,
-    model
+    obtainToken
   } = _ref;
   router.post(route.obtainToken,
   /*#__PURE__*/
@@ -19,7 +19,7 @@ module.exports = function (_ref) {
         const ret = yield auth(ctx);
 
         if (ret) {
-          const data = yield model.obtainToken(ret);
+          const data = yield obtainToken(ret);
           ctx.status = 200;
           ctx.body = data;
         } else {
