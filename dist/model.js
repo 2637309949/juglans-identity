@@ -13,6 +13,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
  */
 const fmt = require('util').format;
 
+const assert = require('assert').strict;
+
+const is = require('is');
+
 const FORMAT = {
   TOKEN: 'TOKEN:%s'
 };
@@ -34,66 +38,70 @@ function object2Json(obj) {
   }
 }
 
-module.exports = {
-  saveToken(redis) {
-    return (
-      /*#__PURE__*/
-      function () {
-        var _ref = _asyncToGenerator(function* (item) {
-          try {
-            const strData = object2Json(item);
-            yield redis.set(fmt(FORMAT.TOKEN, item.accessToken), strData);
-            yield redis.set(fmt(FORMAT.TOKEN, item.refreshToken), strData);
-          } catch (error) {
-            throw error;
-          }
-        });
+function RedisModel(_ref) {
+  let {
+    redis
+  } = _ref;
 
-        return function (_x) {
-          return _ref.apply(this, arguments);
-        };
-      }()
-    );
-  },
-
-  findToken(redis) {
-    return (
-      /*#__PURE__*/
-      function () {
-        var _ref2 = _asyncToGenerator(function* (accessToken, refreshToken) {
-          try {
-            const token = accessToken || refreshToken;
-            const tokenRaw = yield redis.get(fmt(FORMAT.TOKEN, token));
-            return json2Object(tokenRaw);
-          } catch (error) {
-            throw error;
-          }
-        });
-
-        return function (_x2, _x3) {
-          return _ref2.apply(this, arguments);
-        };
-      }()
-    );
-  },
-
-  revokeToken(redis) {
-    return (
-      /*#__PURE__*/
-      function () {
-        var _ref3 = _asyncToGenerator(function* (accessToken) {
-          try {
-            yield redis.del(fmt(FORMAT.TOKEN, accessToken));
-          } catch (error) {
-            throw error;
-          }
-        });
-
-        return function (_x4) {
-          return _ref3.apply(this, arguments);
-        };
-      }()
-    );
+  if (!(this instanceof RedisModel)) {
+    return new RedisModel({
+      redis
+    });
   }
 
-};
+  assert.ok(!is.undefined(redis), 'redis can not be empty!');
+}
+
+RedisModel.prototype.saveToken =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(function* (item) {
+    try {
+      const strData = object2Json(item);
+      yield this.redis.set(fmt(FORMAT.TOKEN, item.accessToken), strData);
+      yield this.redis.set(fmt(FORMAT.TOKEN, item.refreshToken), strData);
+    } catch (error) {
+      throw error;
+    }
+  });
+
+  return function (_x) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+RedisModel.prototype.findToken =
+/*#__PURE__*/
+function () {
+  var _ref3 = _asyncToGenerator(function* (accessToken, refreshToken) {
+    try {
+      const token = accessToken || refreshToken;
+      const tokenRaw = yield this.redis.get(fmt(FORMAT.TOKEN, token));
+      return json2Object(tokenRaw);
+    } catch (error) {
+      throw error;
+    }
+  });
+
+  return function (_x2, _x3) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+RedisModel.prototype.revokeToken =
+/*#__PURE__*/
+function () {
+  var _ref4 = _asyncToGenerator(function* (accessToken) {
+    try {
+      yield this.redis.del(fmt(FORMAT.TOKEN, accessToken));
+    } catch (error) {
+      throw error;
+    }
+  });
+
+  return function (_x4) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+module.exports.RedisModel = RedisModel;

@@ -12,7 +12,7 @@ module.exports = function (_ref) {
     authToken,
     fakeTokens,
     fakeUrls,
-    findToken
+    model
   } = _ref;
   router.use(
   /*#__PURE__*/
@@ -44,7 +44,7 @@ module.exports = function (_ref) {
               message: 'invalid token'
             };
           } else {
-            const token = yield findToken(accessToken);
+            const token = yield model.findToken(accessToken);
             yield utils.setAccessData(ctx, token.extra);
             yield next();
           }

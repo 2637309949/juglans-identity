@@ -12,9 +12,7 @@ module.exports = function (_ref) {
   let {
     router,
     route,
-    findToken,
-    revokeToken,
-    saveToken,
+    model,
     expiresIn
   } = _ref;
   router.post(route.refleshToken,
@@ -23,7 +21,7 @@ module.exports = function (_ref) {
     var _ref2 = _asyncToGenerator(function* (ctx) {
       try {
         const accessToken = yield utils.getAccessToken(ctx);
-        const data = yield findToken(accessToken);
+        const data = yield model.findToken(accessToken);
 
         if (!data) {
           ctx.status = 400;
@@ -32,11 +30,11 @@ module.exports = function (_ref) {
           };
         } else {
           // rebuild Token
-          yield revokeToken(accessToken);
+          yield model.revokeToken(accessToken);
           data.accessToken = utils.randomStr(32);
           data.updated = moment().unix();
           data.expired = moment().add(expiresIn, 'hour').unix();
-          yield saveToken(data);
+          yield model.saveToken(data);
           ctx.status = 200;
           ctx.body = data;
         }

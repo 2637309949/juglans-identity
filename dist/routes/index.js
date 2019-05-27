@@ -16,10 +16,8 @@ module.exports = function (_ref) {
   let {
     router,
     route,
-    obtainToken,
     auth,
-    findToken,
-    revokeToken,
+    model,
     saveToken,
     expiresIn,
     fakeUrls,
@@ -33,23 +31,22 @@ module.exports = function (_ref) {
     router,
     route,
     auth,
-    obtainToken
+    model
   });
   identityTokenRoute({
     router,
     route,
-    findToken
+    model
   });
   revokeTokenRoute({
     router,
     route,
-    revokeToken
+    model
   });
   refleshTokenRoute({
     router,
     route,
-    findToken,
-    revokeToken,
+    model,
     saveToken,
     expiresIn
   });
@@ -58,6 +55,6 @@ module.exports = function (_ref) {
     authToken,
     fakeTokens,
     fakeUrls,
-    findToken
+    model
   });
 };

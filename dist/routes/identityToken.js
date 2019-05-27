@@ -10,7 +10,7 @@ module.exports = function (_ref) {
   let {
     router,
     route,
-    findToken
+    model
   } = _ref;
   router.get(route.identityToken,
   /*#__PURE__*/
@@ -18,7 +18,7 @@ module.exports = function (_ref) {
     var _ref2 = _asyncToGenerator(function* (ctx) {
       try {
         const accessToken = yield utils.getAccessToken(ctx);
-        const data = yield findToken(accessToken);
+        const data = yield model.findToken(accessToken);
 
         if (!data) {
           ctx.status = 400;

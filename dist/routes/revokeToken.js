@@ -10,7 +10,7 @@ module.exports = function (_ref) {
   let {
     router,
     route,
-    revokeToken
+    model
   } = _ref;
   router.post(route.revokeToken,
   /*#__PURE__*/
@@ -18,7 +18,7 @@ module.exports = function (_ref) {
     var _ref2 = _asyncToGenerator(function* (ctx) {
       try {
         const accessToken = yield utils.getAccessToken(ctx);
-        yield revokeToken(accessToken);
+        yield model.revokeToken(accessToken);
         ctx.status = 200;
         ctx.body = {
           success: true

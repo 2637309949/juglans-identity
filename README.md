@@ -3,34 +3,25 @@ Provide user authentication and authorization function.
 - Example:   
 ```javascript
 app.Use(Identity({
-  auth: async function auth (ctx) {
-      const form = _.pick(ctx.request.body, 'username', 'password')
-      const User = mongoose.model('User')
-      const one = await User.findOne({
-        _dr: { $ne: true },
-        username: form.username,
-        password: form.password
-      })
-      if (one) {
-        return {
-          id: one._id,
-          email: one.email,
-          username: one.username,
-          departments: one.department,
-          roles: one.roles
-        }
-      } else {
-        return null
-      }
+  async auth (ctx) {
+    const form = _.pick(ctx.request.body, 'username', 'password')
+    const User = mongoose.model('User')
+    // ctx.status.captcha
+    const one = await User.findOne({ username: form.username, password: form.password })
+    if (!one) return null
+    return {
+      id: one._id,
+      email: one.email,
+      username: one.username,
+      departments: one.department,
+      roles: one.roles
+    }
   },
   fakeTokens: ['DEBUG'],
-  fakeUrls: [ /\/api\/v1\/upload\/.*$/, /\/api\/v1\/favicon\.ico$/ ],
-  store: {
-    saveToken: redis.hooks.saveToken,
-    revokeToken: redis.hooks.revokeToken,
-    findToken: redis.hooks.findToken,
-  }
+  fakeUrls: [/\/api\/v1\/upload\/.*$/, /\/api\/v1\/favicon\.ico$/],
+  model: Identity.model.RedisModel({ redis })
 }))
+
 ```
 ## MIT License
 

@@ -23,10 +23,9 @@ const Routes = require('./routes/index');
 
 const model = require('./model');
 
-const Redis = require('juglans-addition').Redis;
-
 function Identity(_ref) {
   let {
+    model,
     auth,
     expiresIn = 24,
     fakeUrls = [],
@@ -46,6 +45,7 @@ function Identity(_ref) {
 
   if (!(this instanceof Identity)) {
     return new Identity({
+      model,
       auth,
       expiresIn,
       fakeUrls,
@@ -57,11 +57,9 @@ function Identity(_ref) {
         findToken
       }
     });
-  } // assert.ok(is.function(revokeToken), 'revokeToken can not be empty!')
-  // assert.ok(is.function(findToken), 'findToken can not be empty!')
-  // assert.ok(is.function(saveToken), 'saveToken can not be empty!')
+  }
 
-
+  assert.ok(is.object(model), 'model can not be empty!');
   assert.ok(is.function(auth), 'auth can not be empty!');
   assert.ok(is.number(expiresIn), 'expiresIn can not be empty!');
   assert.ok(is.array(fakeTokens) || is.function(fakeTokens), 'fakeTokens should be array or function!');
@@ -76,6 +74,7 @@ function Identity(_ref) {
     revokeToken,
     findToken
   };
+  this.model = model;
 } // Export Identity
 
 
@@ -86,15 +85,14 @@ proto.obtainToken =
 function () {
   var _ref2 = _asyncToGenerator(function* (data) {
     const {
-      expiresIn,
-      saveToken
+      expiresIn
     } = this.options;
     const accessToken = utils.randomStr(32);
     const refreshToken = utils.randomStr(32);
     const created = moment().unix();
     const updated = moment().unix();
     const expired = moment().add(expiresIn, 'hour').unix();
-    yield saveToken({
+    yield this.model.saveToken({
       accessToken,
       refreshToken,
       created,
@@ -121,10 +119,7 @@ proto.authToken =
 /*#__PURE__*/
 function () {
   var _ref3 = _asyncToGenerator(function* (accessToken) {
-    const {
-      findToken
-    } = this.options;
-    const token = yield findToken(accessToken);
+    const token = yield this.model.findToken(accessToken);
     const now = moment().unix();
 
     if (!token) {
@@ -155,38 +150,12 @@ function () {
       expiresIn,
       fakeUrls,
       fakeTokens,
-      route,
-      saveToken,
-      revokeToken,
-      findToken
+      route
     } = this.options;
-
-    if ((!saveToken || !revokeToken || !findToken) && config.redis) {
-      const redis = Redis.retryConnect(config.redis.uri, config.redis.opts, function (err) {
-        if (err) {
-          console.error(err);
-        }
-      });
-
-      if (!saveToken) {
-        saveToken = model.saveToken(redis);
-        this.options.saveToken = saveToken;
-      }
-
-      if (!revokeToken) {
-        revokeToken = model.saveToken(redis);
-        this.options.revokeToken = revokeToken;
-      }
-
-      if (!findToken) {
-        findToken = model.saveToken(redis);
-        this.options.findToken = findToken;
-      }
-    }
-
-    assert.ok(is.function(revokeToken), 'revokeToken can not be empty!');
-    assert.ok(is.function(findToken), 'findToken can not be empty!');
-    assert.ok(is.function(saveToken), 'saveToken can not be empty!');
+    const model = this.model;
+    assert.ok(is.function(model.revokeToken), 'revokeToken can not be empty!');
+    assert.ok(is.function(model.findToken), 'findToken can not be empty!');
+    assert.ok(is.function(model.saveToken), 'saveToken can not be empty!');
 
     if (is.function(fakeTokens)) {
       fakeTokens = yield fakeTokens();
@@ -203,9 +172,7 @@ function () {
       route,
       obtainToken,
       auth,
-      findToken,
-      revokeToken,
-      saveToken,
+      model,
       expiresIn,
       fakeUrls,
       authToken,
@@ -220,4 +187,5 @@ function () {
 
 Identity.getAccessData = utils.getAccessData;
 Identity.getAccessToken = utils.getAccessToken;
+Identity.model = model;
 module.exports = Identity;
