@@ -50,6 +50,7 @@ function RedisModel(_ref) {
   }
 
   assert.ok(!is.undefined(redis), 'redis can not be empty!');
+  this.redis = redis;
 }
 
 RedisModel.prototype.saveToken =
