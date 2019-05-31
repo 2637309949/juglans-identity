@@ -21,7 +21,7 @@ module.exports = function (_ref) {
     var _ref2 = _asyncToGenerator(function* (ctx) {
       try {
         const accessToken = yield utils.getAccessToken(ctx);
-        const data = yield model.findToken(accessToken);
+        const data = yield model.findToken(null, accessToken);
 
         if (!data) {
           ctx.status = 400;

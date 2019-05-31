@@ -76,9 +76,27 @@ RedisModel.prototype.findToken =
 function () {
   var _ref3 = _asyncToGenerator(function* (accessToken, refreshToken) {
     try {
-      const token = accessToken || refreshToken;
-      const tokenRaw = yield this.redis.get(fmt(FORMAT.TOKEN, token));
-      return json2Object(tokenRaw);
+      if (accessToken) {
+        const tokenRaw = yield this.redis.get(fmt(FORMAT.TOKEN, accessToken));
+        const token = json2Object(tokenRaw);
+
+        if (!token) {
+          return null;
+        }
+
+        return token.accessToken === accessToken;
+      } else if (refreshToken) {
+        const tokenRaw = yield this.redis.get(fmt(FORMAT.TOKEN, refreshToken));
+        const token = json2Object(tokenRaw);
+
+        if (!token) {
+          return null;
+        }
+
+        return token.refreshToken === refreshToken;
+      }
+
+      return null;
     } catch (error) {
       throw error;
     }
