@@ -6,6 +6,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 const utils = require('../utils');
 
+const logger = require('../logger');
+
 module.exports = function (_ref) {
   let {
     router,
@@ -24,7 +26,7 @@ module.exports = function (_ref) {
           success: true
         };
       } catch (error) {
-        console.error(error);
+        logger.error(error);
         ctx.status = 500;
         ctx.body = {
           message: error.message

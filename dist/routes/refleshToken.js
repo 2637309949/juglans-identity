@@ -6,6 +6,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 const moment = require('moment');
 
+const logger = require('../logger');
+
 const utils = require('../utils');
 
 module.exports = function (_ref) {
@@ -39,7 +41,7 @@ module.exports = function (_ref) {
           ctx.body = data;
         }
       } catch (error) {
-        console.error(error);
+        logger.error(error);
         ctx.status = 500;
         ctx.body = {
           message: error.message

@@ -1,6 +1,6 @@
 {
   "name": "juglans-identity",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "dist/application.js",
   "scripts": {
@@ -57,6 +57,7 @@
   "dependencies": {
     "is": "^3.3.0",
     "juglans-addition": "^1.0.0",
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "winston": "^3.2.1"
   }
 }

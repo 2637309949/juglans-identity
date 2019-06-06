@@ -17,6 +17,8 @@ const assert = require('assert').strict;
 
 const is = require('is');
 
+const logger = require('./logger');
+
 const FORMAT = {
   TOKEN: 'TOKEN:%s'
 };
@@ -26,6 +28,7 @@ function json2Object(str) {
     if (!str) return null;
     return JSON.parse(str);
   } catch (error) {
+    logger.error(error);
     throw new Error('parse token string wrong,', error);
   }
 }
@@ -34,6 +37,7 @@ function object2Json(obj) {
   try {
     return JSON.stringify(obj);
   } catch (error) {
+    logger.error(error);
     throw new Error('parse token string wrong,', error);
   }
 }
@@ -62,6 +66,7 @@ function () {
       yield this.redis.set(fmt(FORMAT.TOKEN, item.accessToken), strData);
       yield this.redis.set(fmt(FORMAT.TOKEN, item.refreshToken), strData);
     } catch (error) {
+      logger.error(error);
       throw error;
     }
   });
@@ -98,6 +103,7 @@ function () {
 
       return null;
     } catch (error) {
+      logger.error(error);
       throw error;
     }
   });
@@ -114,6 +120,7 @@ function () {
     try {
       yield this.redis.del(fmt(FORMAT.TOKEN, accessToken));
     } catch (error) {
+      logger.error(error);
       throw error;
     }
   });
