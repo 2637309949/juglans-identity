@@ -7,42 +7,31 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 // Copyright (c) 2018-2020 Double.  All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
-const moment = require('moment');
-
 const logger = require('../logger');
-
-const utils = require('../utils');
 
 module.exports = function (_ref) {
   let {
+    iden,
     router,
     route,
     model,
-    getToken,
-    expiresIn
+    getToken
   } = _ref;
-  router.post(route.refleshToken,
+  router.post(route.identityToken, iden ||
   /*#__PURE__*/
   function () {
     var _ref2 = _asyncToGenerator(function* (ctx) {
       try {
         const token = yield getToken(ctx);
-        const data = yield model.findToken(null, token.accessToken);
 
-        if (!data) {
+        if (!token) {
           ctx.status = 400;
           ctx.body = {
             message: 'invalid token'
           };
         } else {
-          yield model.revokeToken(token.accessToken);
-          data.accessToken = utils.randomStr(32);
-          data.updated = moment().unix();
-          data.expired = moment().add(expiresIn, 'hour').unix();
-          yield model.saveToken(data);
           ctx.status = 200;
-          delete data.extra;
-          ctx.body = data;
+          ctx.body = token.extra;
         }
       } catch (error) {
         logger.error(error);

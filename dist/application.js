@@ -23,6 +23,7 @@ function Identity(_ref) {
   let {
     model,
     auth,
+    iden,
     expiresIn = 24,
     fakeUrls = [],
     fakeTokens = [],
@@ -43,6 +44,7 @@ function Identity(_ref) {
     return new Identity({
       model,
       auth,
+      iden,
       expiresIn,
       fakeUrls,
       fakeTokens,
@@ -62,6 +64,7 @@ function Identity(_ref) {
   assert.ok(is.array(fakeUrls) || is.function(fakeUrls), 'fakeUrls should be array or function!');
   this.options = {
     auth,
+    iden,
     expiresIn,
     fakeUrls,
     fakeTokens,
@@ -71,15 +74,40 @@ function Identity(_ref) {
     findToken
   };
   this.model = model;
-} // Export Identity
+}
 
+const proto = Identity.prototype;
 
-const proto = Identity.prototype; // ObtainToken user request and gen token and save token
+proto.getToken =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(function* (ctx) {
+    return ctx.state['token'];
+  });
+
+  return function (_x) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+proto.setToken =
+/*#__PURE__*/
+function () {
+  var _ref3 = _asyncToGenerator(function* (ctx, data) {
+    ctx.state['token'] = data;
+    return this;
+  });
+
+  return function (_x2, _x3) {
+    return _ref3.apply(this, arguments);
+  };
+}(); // ObtainToken user request and gen token and save token
+
 
 proto.obtainToken =
 /*#__PURE__*/
 function () {
-  var _ref2 = _asyncToGenerator(function* (data) {
+  var _ref4 = _asyncToGenerator(function* (data) {
     const {
       expiresIn
     } = this.options;
@@ -105,48 +133,26 @@ function () {
     };
   });
 
-  return function (_x) {
-    return _ref2.apply(this, arguments);
+  return function (_x4) {
+    return _ref4.apply(this, arguments);
   };
-}(); // Auth request token
-
-
-proto.authToken =
-/*#__PURE__*/
-function () {
-  var _ref3 = _asyncToGenerator(function* (accessToken) {
-    const token = yield this.model.findToken(accessToken);
-    const now = moment().unix();
-
-    if (!token) {
-      return false;
-    } else if (now > token.expired) {
-      return false;
-    } else {
-      return true;
-    }
-  });
-
-  return function (_x2) {
-    return _ref3.apply(this, arguments);
-  };
-}(); // Export Plugin
-
+}();
 
 proto.plugin =
 /*#__PURE__*/
 function () {
-  var _ref5 = _asyncToGenerator(function* (_ref4) {
+  var _ref6 = _asyncToGenerator(function* (_ref5) {
     let {
       router,
       config
-    } = _ref4;
+    } = _ref5;
     let {
       auth,
       expiresIn,
       fakeUrls,
       fakeTokens,
-      route
+      route,
+      iden
     } = this.options;
     const model = this.model;
     assert.ok(is.function(model.revokeToken), 'revokeToken can not be empty!');
@@ -162,26 +168,27 @@ function () {
     }
 
     const obtainToken = this.obtainToken.bind(this);
-    const authToken = this.authToken.bind(this);
+    const getToken = this.getToken.bind(this);
+    const setToken = this.setToken.bind(this);
     Routes({
+      getToken,
+      setToken,
       router,
       route,
       obtainToken,
       auth,
+      iden,
       model,
       expiresIn,
       fakeUrls,
-      authToken,
       fakeTokens
     });
   });
 
-  return function (_x3) {
-    return _ref5.apply(this, arguments);
+  return function (_x5) {
+    return _ref6.apply(this, arguments);
   };
 }();
 
-Identity.getAccessData = utils.getAccessData;
-Identity.getAccessToken = utils.getAccessToken;
 Identity.model = model;
 module.exports = Identity;

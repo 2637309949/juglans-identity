@@ -7,6 +7,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 // Copyright (c) 2018-2020 Double.  All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
+const moment = require('moment');
+
 const utils = require('../utils');
 
 const logger = require('../logger');
@@ -14,7 +16,8 @@ const logger = require('../logger');
 module.exports = function (_ref) {
   let {
     router,
-    authToken,
+    setToken,
+    getToken,
     fakeTokens,
     fakeUrls,
     model
@@ -24,14 +27,14 @@ module.exports = function (_ref) {
   function () {
     var _ref2 = _asyncToGenerator(function* (ctx, next) {
       try {
-        const accessToken = yield utils.getAccessToken(ctx);
+        let token = yield getToken(ctx);
         const {
           isFakeTokens,
           isFakeUrls
         } = yield utils.fakeVerify(ctx.path, {
           fakeTokens,
           fakeUrls,
-          accessToken
+          accessToken: token.accessToken
         });
 
         if (isFakeUrls) {
@@ -41,18 +44,26 @@ module.exports = function (_ref) {
           ctx.state.fakeToken = true;
           yield next();
         } else {
-          const ret = yield authToken(accessToken);
+          token = yield model.findToken(token.accessToken);
 
-          if (!ret) {
+          if (!token) {
             ctx.status = 401;
             ctx.body = {
               message: 'invalid token'
             };
-          } else {
-            const token = yield model.findToken(accessToken);
-            yield utils.setAccessData(ctx, token.extra);
-            yield next();
+            return;
           }
+
+          if (moment().unix() > token.expired) {
+            ctx.status = 401;
+            ctx.body = {
+              message: 'invalid token'
+            };
+            return;
+          }
+
+          yield setToken(ctx, token);
+          yield next();
         }
       } catch (error) {
         logger.error(error);

@@ -30,7 +30,7 @@ module.exports = function (_ref) {
         } else {
           ctx.status = 400;
           ctx.body = {
-            message: 'user authentication failed!'
+            message: 'user authentication failed'
           };
         }
       } catch (error) {

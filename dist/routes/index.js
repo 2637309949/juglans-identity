@@ -7,7 +7,7 @@ const accessTokenRoute = require('./accessToken');
 
 const obtainTokenRoute = require('./obtainToken');
 
-const identityTokenRoute = require('./identityToken');
+const idenToken = require('./idenToken');
 
 const revokeTokenRoute = require('./revokeToken');
 
@@ -17,19 +17,22 @@ const authTokenRoute = require('./authToken');
 
 module.exports = function (_ref) {
   let {
+    getToken,
+    setToken,
     router,
     route,
     auth,
+    iden,
     model,
     obtainToken,
     saveToken,
     expiresIn,
     fakeUrls,
-    authToken,
     fakeTokens
   } = _ref;
   accessTokenRoute({
-    router
+    router,
+    setToken
   });
   obtainTokenRoute({
     router,
@@ -37,28 +40,34 @@ module.exports = function (_ref) {
     auth,
     obtainToken
   });
-  identityTokenRoute({
+  authTokenRoute({
+    router,
+    setToken,
+    getToken,
+    fakeTokens,
+    fakeUrls,
+    model
+  });
+  idenToken({
+    iden,
     router,
     route,
-    model
+    model,
+    getToken,
+    setToken
   });
   revokeTokenRoute({
     router,
     route,
-    model
+    model,
+    getToken
   });
   refleshTokenRoute({
     router,
     route,
+    getToken,
     model,
     saveToken,
     expiresIn
-  });
-  authTokenRoute({
-    router,
-    authToken,
-    fakeTokens,
-    fakeUrls,
-    model
   });
 };

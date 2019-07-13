@@ -85,7 +85,7 @@ function () {
           return null;
         }
 
-        return token.accessToken === accessToken;
+        return token;
       } else if (refreshToken) {
         const tokenRaw = yield this.redis.get(fmt(FORMAT.TOKEN, refreshToken));
         const token = json2Object(tokenRaw);
@@ -94,7 +94,7 @@ function () {
           return null;
         }
 
-        return token.refreshToken === refreshToken;
+        return token;
       }
 
       return null;

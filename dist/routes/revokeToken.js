@@ -7,23 +7,22 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 // Copyright (c) 2018-2020 Double.  All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
-const utils = require('../utils');
-
 const logger = require('../logger');
 
 module.exports = function (_ref) {
   let {
     router,
     route,
-    model
+    model,
+    getToken
   } = _ref;
   router.post(route.revokeToken,
   /*#__PURE__*/
   function () {
     var _ref2 = _asyncToGenerator(function* (ctx) {
       try {
-        const accessToken = yield utils.getAccessToken(ctx);
-        yield model.revokeToken(accessToken);
+        const token = yield getToken(ctx);
+        yield model.revokeToken(token.accessToken);
         ctx.status = 200;
         ctx.body = {
           success: true
