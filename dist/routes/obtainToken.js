@@ -24,9 +24,12 @@ module.exports = function (_ref) {
         const ret = yield auth(ctx);
 
         if (ret) {
-          const data = yield obtainToken(ret);
+          const info = yield obtainToken(ret);
+          ctx.cookies.set('accessToken', info.accessToken, {
+            maxAge: 12 * 60 * 60 * 1000
+          });
           ctx.status = 200;
-          ctx.body = data;
+          ctx.body = info;
         } else {
           ctx.status = 400;
           ctx.body = {
