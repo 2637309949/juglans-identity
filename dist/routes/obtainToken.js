@@ -26,7 +26,7 @@ module.exports = function (_ref) {
         if (ret) {
           const info = yield obtainToken(ret);
           ctx.cookies.set('accessToken', info.accessToken, {
-            maxAge: 12 * 60 * 60 * 1000
+            maxAge: 60 * 60 * 24
           });
           ctx.status = 200;
           ctx.body = info;
