@@ -30,10 +30,7 @@ module.exports = function (_ref) {
         const data = yield model.findToken(null, token.accessToken);
 
         if (!data) {
-          ctx.status = 400;
-          ctx.body = {
-            message: 'invalid token'
-          };
+          throw new Error('invalid token');
         } else {
           yield model.revokeToken(token.accessToken);
           data.accessToken = utils.randomStr(32);
@@ -48,7 +45,8 @@ module.exports = function (_ref) {
         logger.error(error);
         ctx.status = 500;
         ctx.body = {
-          message: error.message
+          message: 'Internal Server Error',
+          stack: error.stack || error.message
         };
       }
     });

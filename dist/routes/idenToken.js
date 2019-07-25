@@ -37,7 +37,8 @@ module.exports = function (_ref) {
         logger.error(error);
         ctx.status = 500;
         ctx.body = {
-          message: error.message
+          message: 'Internal Server Error',
+          stack: error.stack || error.message
         };
       }
     });
