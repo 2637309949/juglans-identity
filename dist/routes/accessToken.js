@@ -7,6 +7,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 // Copyright (c) 2018-2020 Double.  All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
+const tokenKey = 'accessToken';
+
 module.exports = function (_ref) {
   let {
     router,
@@ -17,7 +19,7 @@ module.exports = function (_ref) {
   function () {
     var _ref2 = _asyncToGenerator(function* (ctx, next) {
       const body = ctx.request.body;
-      const accessToken = ctx.query['accessToken'] || body['accessToken'] || ctx.cookies.get('accessToken') || ctx.get('accessToken');
+      const accessToken = ctx.query[tokenKey] || body[tokenKey] || ctx.cookies.get(tokenKey) || ctx.get(tokenKey);
       yield setToken(ctx, {
         accessToken
       });
