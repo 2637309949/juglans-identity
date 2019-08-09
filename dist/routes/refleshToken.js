@@ -9,8 +9,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 // license that can be found in the LICENSE file.
 const moment = require('moment');
 
-const logger = require('../logger');
-
 const utils = require('../utils');
 
 module.exports = function (_ref) {
@@ -25,29 +23,20 @@ module.exports = function (_ref) {
   /*#__PURE__*/
   function () {
     var _ref2 = _asyncToGenerator(function* (ctx) {
-      try {
-        const token = yield getToken(ctx);
-        const data = yield model.findToken(null, token.accessToken);
+      const token = yield getToken(ctx);
+      const data = yield model.findToken(null, token.accessToken);
 
-        if (!data) {
-          throw new Error('invalid token');
-        } else {
-          yield model.revokeToken(token.accessToken);
-          data.accessToken = utils.randomStr(32);
-          data.updated = moment().unix();
-          data.expired = moment().add(expiresIn, 'hour').unix();
-          yield model.saveToken(data);
-          ctx.status = 200;
-          delete data.extra;
-          ctx.body = data;
-        }
-      } catch (error) {
-        logger.error(error);
-        ctx.status = 500;
-        ctx.body = {
-          message: 'Internal Server Error',
-          stack: error.stack || error.message
-        };
+      if (!data) {
+        throw new Error('invalid token');
+      } else {
+        yield model.revokeToken(token.accessToken);
+        data.accessToken = utils.randomStr(32);
+        data.updated = moment().unix();
+        data.expired = moment().add(expiresIn, 'hour').unix();
+        yield model.saveToken(data);
+        ctx.status = 200;
+        delete data.extra;
+        ctx.body = data;
       }
     });
 

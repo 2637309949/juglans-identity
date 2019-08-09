@@ -11,8 +11,6 @@ const moment = require('moment');
 
 const utils = require('../utils');
 
-const logger = require('../logger');
-
 module.exports = function (_ref) {
   let {
     router,
@@ -26,52 +24,43 @@ module.exports = function (_ref) {
   /*#__PURE__*/
   function () {
     var _ref2 = _asyncToGenerator(function* (ctx, next) {
-      try {
-        let token = yield getToken(ctx);
-        const {
-          isFakeTokens,
-          isFakeUrls
-        } = yield utils.fakeVerify(ctx.path, {
-          fakeTokens,
-          fakeUrls,
-          accessToken: token.accessToken
-        });
+      let token = yield getToken(ctx);
+      const {
+        isFakeTokens,
+        isFakeUrls
+      } = yield utils.fakeVerify(ctx.path, {
+        fakeTokens,
+        fakeUrls,
+        accessToken: token.accessToken
+      });
 
-        if (isFakeUrls) {
-          ctx.state.fakeUrl = true;
-          yield next();
-        } else if (isFakeTokens) {
-          ctx.state.fakeToken = true;
-          yield next();
-        } else {
-          token = yield model.findToken(token.accessToken);
+      if (isFakeUrls) {
+        ctx.state.fakeUrl = true;
+        yield next();
+      } else if (isFakeTokens) {
+        ctx.state.fakeToken = true;
+        yield next();
+      } else {
+        token = yield model.findToken(token.accessToken);
 
-          if (!token) {
-            ctx.status = 401;
-            ctx.body = {
-              message: 'invalid token'
-            };
-            return;
-          }
-
-          if (moment().unix() > token.expired) {
-            ctx.status = 401;
-            ctx.body = {
-              message: 'invalid token'
-            };
-            return;
-          }
-
-          yield setToken(ctx, token);
-          yield next();
+        if (!token) {
+          ctx.status = 401;
+          ctx.body = {
+            message: 'invalid token'
+          };
+          return;
         }
-      } catch (error) {
-        logger.error(error);
-        ctx.status = 500;
-        ctx.body = {
-          message: 'Internal Server Error',
-          stack: error.stack || error.message
-        };
+
+        if (moment().unix() > token.expired) {
+          ctx.status = 401;
+          ctx.body = {
+            message: 'invalid token'
+          };
+          return;
+        }
+
+        yield setToken(ctx, token);
+        yield next();
       }
     });
 

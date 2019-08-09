@@ -7,8 +7,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 // Copyright (c) 2018-2020 Double.  All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
-const logger = require('../logger');
-
 module.exports = function (_ref) {
   let {
     router,
@@ -20,26 +18,17 @@ module.exports = function (_ref) {
   /*#__PURE__*/
   function () {
     var _ref2 = _asyncToGenerator(function* (ctx) {
-      try {
-        const ret = yield auth(ctx);
+      const ret = yield auth(ctx);
 
-        if (ret) {
-          const info = yield obtainToken(ret);
-          ctx.cookies.set('accessToken', info.accessToken, {
-            maxAge: 60 * 60 * 24
-          });
-          ctx.status = 200;
-          ctx.body = info;
-        } else {
-          throw new Error('user authentication failed');
-        }
-      } catch (error) {
-        logger.error(error);
-        ctx.status = 500;
-        ctx.body = {
-          message: 'Internal Server Error',
-          stack: error.stack || error.message
-        };
+      if (ret) {
+        const info = yield obtainToken(ret);
+        ctx.cookies.set('accessToken', info.accessToken, {
+          maxAge: 60 * 60 * 24
+        });
+        ctx.status = 200;
+        ctx.body = info;
+      } else {
+        throw new Error('user authentication failed');
       }
     });
 

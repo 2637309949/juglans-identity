@@ -7,8 +7,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 // Copyright (c) 2018-2020 Double.  All rights reserved.
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
-const logger = require('../logger');
-
 module.exports = function (_ref) {
   let {
     iden,
@@ -21,25 +19,16 @@ module.exports = function (_ref) {
   /*#__PURE__*/
   function () {
     var _ref2 = _asyncToGenerator(function* (ctx) {
-      try {
-        const token = yield getToken(ctx);
+      const token = yield getToken(ctx);
 
-        if (!token) {
-          ctx.status = 400;
-          ctx.body = {
-            message: 'invalid token'
-          };
-        } else {
-          ctx.status = 200;
-          ctx.body = token.extra;
-        }
-      } catch (error) {
-        logger.error(error);
-        ctx.status = 500;
+      if (!token) {
+        ctx.status = 400;
         ctx.body = {
-          message: 'Internal Server Error',
-          stack: error.stack || error.message
+          message: 'invalid token'
         };
+      } else {
+        ctx.status = 200;
+        ctx.body = token.extra;
       }
     });
 
