@@ -165,6 +165,7 @@ function () {
     const obtainToken = this.obtainToken.bind(this);
     const getToken = this.getToken.bind(this);
     const setToken = this.setToken.bind(this);
+    const model = this.model;
     Routes({
       getToken,
       setToken,
