@@ -18,17 +18,27 @@ module.exports = function (_ref) {
   /*#__PURE__*/
   function () {
     var _ref2 = _asyncToGenerator(function* (ctx) {
-      const ret = yield auth(ctx);
+      try {
+        const ret = yield auth(ctx);
 
-      if (ret) {
-        const info = yield obtainToken(ret);
-        ctx.cookies.set('accessToken', info.accessToken, {
-          maxAge: 60 * 60 * 24
-        });
-        ctx.status = 200;
-        ctx.body = info;
-      } else {
-        throw new Error('user authentication failed');
+        if (ret) {
+          const info = yield obtainToken(ret);
+          ctx.cookies.set('accessToken', info.accessToken, {
+            maxAge: 60 * 60 * 24
+          });
+          ctx.status = 200;
+          ctx.body = info;
+        } else {
+          ctx.status = 500;
+          ctx.body = {
+            message: 'user does not exist or password does not match'
+          };
+        }
+      } catch (error) {
+        ctx.status = 500;
+        ctx.body = {
+          message: error.message
+        };
       }
     });
 

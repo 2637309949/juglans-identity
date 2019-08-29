@@ -27,7 +27,10 @@ module.exports = function (_ref) {
       const data = yield model.findToken(null, token.accessToken);
 
       if (!data) {
-        throw new Error('invalid token');
+        ctx.status = 500;
+        ctx.body = {
+          message: 'invalid token'
+        };
       } else {
         yield model.revokeToken(token.accessToken);
         data.accessToken = utils.randomStr(32);
