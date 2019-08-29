@@ -58,3 +58,15 @@ repo.randomStr = function () {
 
   return text;
 };
+
+repo.defaultAuth =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(function* (ctx) {
+    throw new Error('user authentication failed');
+  });
+
+  return function (_x3) {
+    return _ref2.apply(this, arguments);
+  };
+}();

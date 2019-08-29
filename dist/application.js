@@ -17,12 +17,14 @@ const utils = require('./utils');
 
 const Routes = require('./routes/index');
 
+const options = require('./options');
+
 const model = require('./model');
 
 function Identity(_ref) {
   let {
     model,
-    auth,
+    auth = utils.defaultAuth,
     iden,
     expiresIn = 24,
     fakeUrls = [],
@@ -32,12 +34,7 @@ function Identity(_ref) {
       revokeToken: '/revokeToken',
       refleshToken: '/refleshToken',
       identityToken: '/identityToken'
-    },
-    store: {
-      saveToken,
-      revokeToken,
-      findToken
-    } = {}
+    }
   } = _ref;
 
   if (!(this instanceof Identity)) {
@@ -48,17 +45,10 @@ function Identity(_ref) {
       expiresIn,
       fakeUrls,
       fakeTokens,
-      route,
-      store: {
-        saveToken,
-        revokeToken,
-        findToken
-      }
+      route
     });
   }
 
-  assert.ok(is.object(model), 'model can not be empty!');
-  assert.ok(is.function(auth), 'auth can not be empty!');
   assert.ok(is.number(expiresIn), 'expiresIn can not be empty!');
   assert.ok(is.array(fakeTokens) || is.function(fakeTokens), 'fakeTokens should be array or function!');
   assert.ok(is.array(fakeUrls) || is.function(fakeUrls), 'fakeUrls should be array or function!');
@@ -68,10 +58,7 @@ function Identity(_ref) {
     expiresIn,
     fakeUrls,
     fakeTokens,
-    route,
-    saveToken,
-    revokeToken,
-    findToken
+    route
   };
   this.model = model;
 }
@@ -101,7 +88,19 @@ function () {
   return function (_x2, _x3) {
     return _ref3.apply(this, arguments);
   };
-}(); // ObtainToken user request and gen token and save token
+}();
+
+proto.addOptions = function () {
+  for (var _len = arguments.length, opts = new Array(_len), _key = 0; _key < _len; _key++) {
+    opts[_key] = arguments[_key];
+  }
+
+  for (const opt of opts) {
+    opt.apply(this);
+  }
+
+  return this;
+}; // ObtainToken user request and gen token and save token
 
 
 proto.obtainToken =
@@ -154,10 +153,6 @@ function () {
       route,
       iden
     } = this.options;
-    const model = this.model;
-    assert.ok(is.function(model.revokeToken), 'revokeToken can not be empty!');
-    assert.ok(is.function(model.findToken), 'findToken can not be empty!');
-    assert.ok(is.function(model.saveToken), 'saveToken can not be empty!');
 
     if (is.function(fakeTokens)) {
       fakeTokens = yield fakeTokens();
@@ -191,4 +186,5 @@ function () {
 }();
 
 Identity.model = model;
+Identity.options = options;
 module.exports = Identity;
