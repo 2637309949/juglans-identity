@@ -63,13 +63,23 @@ function Identity(_ref) {
   this.model = model;
 }
 
-const proto = Identity.prototype;
-
-proto.getToken =
+Identity.prototype.verifyContext =
 /*#__PURE__*/
 function () {
   var _ref2 = _asyncToGenerator(function* (ctx) {
-    return ctx.state['token'];
+    let token = yield this.getToken(ctx);
+
+    if (token && token.accessToken) {
+      const one = yield this.model.findToken(token.accessToken);
+
+      if (one) {
+        if (moment().unix() > one.expired) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   });
 
   return function (_x) {
@@ -77,20 +87,52 @@ function () {
   };
 }();
 
-proto.setToken =
+Identity.prototype.verifyToken =
 /*#__PURE__*/
 function () {
-  var _ref3 = _asyncToGenerator(function* (ctx, data) {
-    ctx.state['token'] = data;
-    return this;
+  var _ref3 = _asyncToGenerator(function* (token) {
+    const one = yield this.model.findToken(token);
+
+    if (one) {
+      if (moment().unix() > one.expired) {
+        return true;
+      }
+    }
+
+    return false;
   });
 
-  return function (_x2, _x3) {
+  return function (_x2) {
     return _ref3.apply(this, arguments);
   };
 }();
 
-proto.addOptions = function () {
+Identity.prototype.getToken =
+/*#__PURE__*/
+function () {
+  var _ref4 = _asyncToGenerator(function* (ctx) {
+    return ctx.state['token'];
+  });
+
+  return function (_x3) {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+Identity.prototype.setToken =
+/*#__PURE__*/
+function () {
+  var _ref5 = _asyncToGenerator(function* (ctx, data) {
+    ctx.state['token'] = data;
+    return this;
+  });
+
+  return function (_x4, _x5) {
+    return _ref5.apply(this, arguments);
+  };
+}();
+
+Identity.prototype.addOptions = function () {
   for (var _len = arguments.length, opts = new Array(_len), _key = 0; _key < _len; _key++) {
     opts[_key] = arguments[_key];
   }
@@ -103,10 +145,10 @@ proto.addOptions = function () {
 }; // ObtainToken user request and gen token and save token
 
 
-proto.obtainToken =
+Identity.prototype.obtainToken =
 /*#__PURE__*/
 function () {
-  var _ref4 = _asyncToGenerator(function* (data) {
+  var _ref6 = _asyncToGenerator(function* (data) {
     const {
       expiresIn
     } = this.options;
@@ -132,19 +174,19 @@ function () {
     };
   });
 
-  return function (_x4) {
-    return _ref4.apply(this, arguments);
+  return function (_x6) {
+    return _ref6.apply(this, arguments);
   };
 }();
 
-proto.plugin =
+Identity.prototype.plugin =
 /*#__PURE__*/
 function () {
-  var _ref6 = _asyncToGenerator(function* (_ref5) {
+  var _ref8 = _asyncToGenerator(function* (_ref7) {
     let {
       router,
       config
-    } = _ref5;
+    } = _ref7;
     let {
       auth,
       expiresIn,
@@ -179,10 +221,13 @@ function () {
       fakeUrls,
       fakeTokens
     });
+    return {
+      identity: this
+    };
   });
 
-  return function (_x5) {
-    return _ref6.apply(this, arguments);
+  return function (_x7) {
+    return _ref8.apply(this, arguments);
   };
 }();
 

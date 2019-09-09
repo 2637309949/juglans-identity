@@ -20,9 +20,13 @@ module.exports = function (_ref) {
     var _ref2 = _asyncToGenerator(function* (ctx, next) {
       const body = ctx.request.body;
       const accessToken = ctx.query[tokenKey] || body[tokenKey] || ctx.cookies.get(tokenKey) || ctx.get(tokenKey);
-      yield setToken(ctx, {
-        accessToken
-      });
+
+      if (accessToken) {
+        yield setToken(ctx, {
+          accessToken
+        });
+      }
+
       yield next();
     });
 

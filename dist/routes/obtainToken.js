@@ -12,7 +12,8 @@ module.exports = function (_ref) {
     router,
     route,
     auth,
-    obtainToken
+    obtainToken,
+    expiresIn
   } = _ref;
   router.post(route.obtainToken,
   /*#__PURE__*/
@@ -24,7 +25,7 @@ module.exports = function (_ref) {
         if (ret) {
           const info = yield obtainToken(ret);
           ctx.cookies.set('accessToken', info.accessToken, {
-            maxAge: 60 * 60 * 24
+            maxAge: 60 * 60 * expiresIn
           });
           ctx.status = 200;
           ctx.body = info;

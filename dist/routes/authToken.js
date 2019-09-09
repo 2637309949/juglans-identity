@@ -31,7 +31,7 @@ module.exports = function (_ref) {
       } = yield utils.fakeVerify(ctx.path, {
         fakeTokens,
         fakeUrls,
-        accessToken: token.accessToken
+        accessToken: token && token.accessToken
       });
 
       if (isFakeUrls) {
@@ -41,7 +41,7 @@ module.exports = function (_ref) {
         ctx.state.fakeToken = true;
         yield next();
       } else {
-        token = yield model.findToken(token.accessToken);
+        token = yield model.findToken(token && token.accessToken);
 
         if (!token) {
           ctx.status = 401;

@@ -30,6 +30,20 @@ module.exports.authOption = function (auth) {
   });
 };
 
+module.exports.fakeUrlOption = function () {
+  for (var _len = arguments.length, urls = new Array(_len), _key = 0; _key < _len; _key++) {
+    urls[_key] = arguments[_key];
+  }
+
+  assert.ok(is.array(urls), 'urls can not be empty!');
+  return new Option(function (i) {
+    urls.forEach(url => {
+      i.options.fakeUrls.push(url);
+    });
+    return i;
+  });
+};
+
 module.exports.modelOption = function (model) {
   assert.ok(is.object(model), 'model can not be empty!');
   return new Option(function (i) {

@@ -38,7 +38,8 @@ module.exports = function (_ref) {
     router,
     route,
     auth,
-    obtainToken
+    obtainToken,
+    expiresIn
   });
   authTokenRoute({
     router,
