@@ -94,7 +94,7 @@ function () {
     const one = yield this.model.findToken(token);
 
     if (one) {
-      if (moment().unix() > one.expired) {
+      if (moment().unix() < one.expired) {
         return true;
       }
     }
@@ -156,7 +156,7 @@ function () {
     const refreshToken = utils.randomStr(32);
     const created = moment().unix();
     const updated = moment().unix();
-    const expired = moment().add(expiresIn, 'hour').unix();
+    const expired = moment().add(expiresIn, 'h').unix();
     yield this.model.saveToken({
       accessToken,
       refreshToken,
